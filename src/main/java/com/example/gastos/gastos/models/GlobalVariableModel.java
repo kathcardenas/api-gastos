@@ -8,23 +8,13 @@ import jakarta.persistence.Table;
 import lombok.Data;
 
 @Entity
-@Table(name = "proveedores")
+@Table(name = "global_variables")
 @Data
-public class SuppliersModel {
-
+public class GlobalVariableModel {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     private String name;
-
-    public SuppliersModel() {
-    }
-
-    public SuppliersModel(String name) {
-        this.name = name;
-    }
-
-    
-    
-
+    private String value;
 }

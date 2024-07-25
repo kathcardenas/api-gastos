@@ -7,7 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
-import com.example.gastos.gastos.models.MonthFixedCostsModel;
+import com.example.gastos.gastos.models.MonthFixedCostModel;
 import com.example.gastos.gastos.repositories.IMonthFixedCostsRepository;
 
 @Service
@@ -15,16 +15,20 @@ public class MonthFixedCostsService {
 @Autowired
     private IMonthFixedCostsRepository repository;
 
-    public List<MonthFixedCostsModel> list(){
+    public List<MonthFixedCostModel> list(){
         return this.repository.findAll(Sort.by("id").descending());
     }
 
-    public void save(MonthFixedCostsModel model){
+    public List<MonthFixedCostModel> listByMonthAndYear(Integer month, Integer year){
+        return this.repository.findByMonthAndYear(month, year);
+    }
+
+    public void save(MonthFixedCostModel model){
         this.repository.save(model);
     }
 
-    public MonthFixedCostsModel findById(Long id){
-        Optional<MonthFixedCostsModel> optional = this.repository.findById(id);
+    public MonthFixedCostModel findById(Long id){
+        Optional<MonthFixedCostModel> optional = this.repository.findById(id);
         if (optional.isPresent()) {
             return optional.get();
         }

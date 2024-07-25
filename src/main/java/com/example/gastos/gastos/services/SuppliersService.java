@@ -7,7 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
-import com.example.gastos.gastos.models.SuppliersModel;
+import com.example.gastos.gastos.models.SupplierModel;
 import com.example.gastos.gastos.repositories.ISupplierRepository;
 
 @Service
@@ -15,16 +15,16 @@ public class SuppliersService {
 @Autowired
     private ISupplierRepository repository;
 
-    public List<SuppliersModel> list(){
+    public List<SupplierModel> list(){
         return this.repository.findAll(Sort.by("id").descending());
     }
 
-    public void save(SuppliersModel model){
+    public void save(SupplierModel model){
         this.repository.save(model);
     }
 
-    public SuppliersModel findById(Long id){
-        Optional<SuppliersModel> optional = this.repository.findById(id);
+    public SupplierModel findById(Long id){
+        Optional<SupplierModel> optional = this.repository.findById(id);
         if (optional.isPresent()) {
             return optional.get();
         }

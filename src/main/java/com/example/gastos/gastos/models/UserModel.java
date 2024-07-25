@@ -12,40 +12,41 @@ import jakarta.persistence.Table;
 import lombok.Data;
 
 @Entity
-@Table(name = "usuarios")
+@Table(name = "users")
 @Data
-public class UsersModel {
-
+public class UserModel {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    
     private String name;
     private String email;
     private String password;
 
     private String token;
 
-    private Date date_created_user;
+    private Date date_created;
 
     @ManyToOne()
-    @JoinColumn(name = "perfil_id")
-    private ProfilesModel porfileId;
+    @JoinColumn(name = "profile_id")
+    private ProfileModel profileId;
 
-    @ManyToOne()
-    @JoinColumn(name = "estados_id")
+    @ManyToOne
+    @JoinColumn(name = "status_id")
     private StatusModel statusId;
 
-    public UsersModel(String name, String email, String password, String token, Date date_created_user,
-            ProfilesModel porfileId, StatusModel statusId) {
+    public UserModel(String name, String email, String password, String token, Date date_created,
+            ProfileModel profileId, StatusModel statusId) {
         this.name = name;
         this.email = email;
         this.password = password;
         this.token = token;
-        this.date_created_user = date_created_user;
-        this.porfileId = porfileId;
+        this.date_created = date_created;
+        this.profileId = profileId;
         this.statusId = statusId;
     }
 
-    public UsersModel() {
+    public UserModel() {
     }
+
 }

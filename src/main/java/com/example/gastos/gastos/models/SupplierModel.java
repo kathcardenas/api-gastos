@@ -8,15 +8,20 @@ import jakarta.persistence.Table;
 import lombok.Data;
 
 @Entity
-@Table(name = "variables_globales")
+@Table(name = "suppliers")
 @Data
-public class GlobalVariablesModel {
+public class SupplierModel {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private String name;
 
-    private String value;
+    public SupplierModel(String name) {
+        this.name = name;
+    }
 
+    public SupplierModel() {
+    }
 }

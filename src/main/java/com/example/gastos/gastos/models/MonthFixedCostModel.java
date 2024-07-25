@@ -12,33 +12,36 @@ import jakarta.persistence.Table;
 import lombok.Data;
 
 @Entity
-@Table(name="gastos_fijos")
+@Table(name = "month_fixed_cost")
 @Data
-public class MonthFixedCostsModel {
-
+public class MonthFixedCostModel {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private String name;
     private Double amount;
-    private Date date_created_cost;
-    
-    @ManyToOne()
-    @JoinColumn(name = "estados_id")
+    private Date created;
+
+    @ManyToOne
+    @JoinColumn(name = "status_id")
     private StatusModel statusId;
 
     @ManyToOne()
-    @JoinColumn(name = "proveedores_id")
-    private SuppliersModel supplierId;
+    @JoinColumn(name = "supplier_id")
+    private SupplierModel supplierId;
 
-    public MonthFixedCostsModel(String name, Double amount, Date date_created_cost, StatusModel statusId, SuppliersModel supplierId) {
+    public MonthFixedCostModel(String name, Double amount, Date created, StatusModel statusId,
+            SupplierModel supplierId) {
         this.name = name;
         this.amount = amount;
-        this.date_created_cost = date_created_cost;
+        this.created = created;
         this.statusId = statusId;
         this.supplierId = supplierId;
     }
 
+    public MonthFixedCostModel() {
+    }
+    
     
 }

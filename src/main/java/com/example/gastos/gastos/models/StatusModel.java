@@ -8,7 +8,7 @@ import jakarta.persistence.Table;
 import lombok.Data;
 
 @Entity
-@Table(name="estados")
+@Table(name = "status")
 @Data
 public class StatusModel {
 
@@ -18,5 +18,4 @@ public class StatusModel {
 
     private String name;
     private String value;
-
 }

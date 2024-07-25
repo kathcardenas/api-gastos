@@ -13,10 +13,9 @@ import jakarta.persistence.Table;
 import lombok.Data;
 
 @Entity
-@Table(name="gastos_por_dia")
+@Table(name = "daily_fixed_cost")
 @Data
-public class DayFixedCostsModel {
-
+public class DayFixedCostModel {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -24,26 +23,26 @@ public class DayFixedCostsModel {
     private Double net;
     private Double iva;
     private Double total;
-    private Date date_created_cost;
-    
+    private Date created;
+
     @Column(length = 65535, columnDefinition = "text")
     private String description;
-    
+
     @ManyToOne()
-    @JoinColumn(name = "proveedores_id")
-    private SuppliersModel supplierId;
+    @JoinColumn(name = "supplier_id")
+    private SupplierModel supplierId;
 
-    public DayFixedCostsModel() {
-    }
-
-    public DayFixedCostsModel(Double net, Double iva, Double total, Date date_created_cost, String description,
-            SuppliersModel supplierId) {
+    public DayFixedCostModel(Double net, Double iva, Double total, Date created, String description,
+            SupplierModel supplierId) {
         this.net = net;
         this.iva = iva;
         this.total = total;
-        this.date_created_cost = date_created_cost;
+        this.created = created;
         this.description = description;
         this.supplierId = supplierId;
+    }
+
+    public DayFixedCostModel() {
     }
 
     
