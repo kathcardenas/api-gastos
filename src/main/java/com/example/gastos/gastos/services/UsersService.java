@@ -12,8 +12,11 @@ import com.example.gastos.gastos.repositories.IUsersRepository;
 
 @Service
 public class UsersService {
-@Autowired
+    @Autowired
     private IUsersRepository repository;
+
+    @Autowired
+    private StatusService statusService;
 
     public List<UserModel> list(){
         return this.repository.findAll(Sort.by("id").descending());
@@ -21,6 +24,18 @@ public class UsersService {
 
     public void save(UserModel model){
         this.repository.save(model);
+    }
+
+    public UserModel findByEmail(String email){
+        return this.repository.findByEmail(email);
+    }
+
+    public UserModel findByEmailAndActiveStatus(String email){
+        Optional<UserModel> optional = this.repository.findByEmailAndStatusId(email, this.statusService.findById(1L));
+        if (optional.isPresent()) {
+            return optional.get();
+        }
+        return null;
     }
 
     public UserModel findById(Long id){
