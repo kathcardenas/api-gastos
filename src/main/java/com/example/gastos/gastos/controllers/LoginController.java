@@ -5,6 +5,7 @@ import java.util.HashMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -15,8 +16,9 @@ import org.springframework.web.bind.annotation.RestController;
 import com.example.gastos.gastos.dto.LoginDto;
 import com.example.gastos.gastos.dto.JwtResponseDto;
 import com.example.gastos.gastos.jwt.JwtService;
+import com.example.gastos.gastos.jwt.UserInfoService;
 import com.example.gastos.gastos.models.UserModel;
-import com.example.gastos.gastos.services.UsersService;
+import com.example.gastos.gastos.services.UserService;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
@@ -30,14 +32,17 @@ public class LoginController {
     private BCryptPasswordEncoder passwordEncoder;
 
     @Autowired
-    private UsersService usersService;
+    private UserService usersService;
+
+    @Autowired
+    private UserInfoService userInfoService;
 
     @Autowired
     private JwtService jwtService;
 
     @PostMapping("/auth/login")
     public ResponseEntity<?> login(@RequestBody LoginDto dto) {
-        UserModel user = this.usersService.findByEmailAndActiveStatus(dto.getEmail());
+        UserModel user = this.usersService.findByEmail(dto.getEmail());
         if (user==null) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new HashMap<String, String>(){
                 {
@@ -46,13 +51,13 @@ public class LoginController {
             });
         } else{
             if (this.passwordEncoder.matches(dto.getPassword(), user.getPassword())) {
-                String token = this.jwtService.generateToken(user.getEmail());
+                UserDetails userDetails = this.userInfoService.loadUserByUsername(user.getEmail());
+
+                String token = this.jwtService.generateToken(userDetails);
                 return ResponseEntity.status(HttpStatus.OK).body(
                     new JwtResponseDto(
-                        user.getId(), 
-                        user.getName(), 
-                        user.getProfileId().getName(),
-                        user.getProfileId().getId(), 
+                        user.getId(),
+                        user.getName(),
                         token)
                 );
                 /*return ResponseEntity.status(HttpStatus.OK).body(new HashMap<String, String>(){
@@ -79,12 +84,12 @@ public class LoginController {
         UserModel user = this.usersService.findById(id);
         try {
             if (user != null) {
+                UserDetails userDetails = this.userInfoService.loadUserByUsername(user.getEmail());
+
                 return ResponseEntity.status(HttpStatus.OK).body(
                     new JwtResponseDto(user.getId(), 
-                    user.getName(), 
-                    user.getProfileId().getName(), 
-                    user.getProfileId().getId(), 
-                    this.jwtService.generateToken(user.getEmail()))
+                    user.getName(),
+                    this.jwtService.generateToken(userDetails))
                 );
             }
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new HashMap<String, String>(){

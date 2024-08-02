@@ -13,7 +13,6 @@ import com.example.gastos.gastos.models.UserModel;
 
 public class UserInfoDetails implements UserDetails{
 
-    private static final long serialVersionUID = 1L;
     private String name;
     private String password;
     private List<GrantedAuthority> authorities;//va buscar cualquier rol generado de spring

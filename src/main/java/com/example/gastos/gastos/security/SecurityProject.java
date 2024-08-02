@@ -29,10 +29,13 @@ public class SecurityProject {
     @Autowired
     private JwtAuthFilter authFilter;
 
+    @Autowired
+    private UserInfoService userInfoService;
+
     @Bean
-    public UserDetailsService userDetailsService(){
-        return new UserInfoService();
-    }
+    public UserDetailsService userDetailsService() {
+    return userInfoService; // Asegúrate de que `userInfoService` esté autowired
+}
 
     @Bean
     public BCryptPasswordEncoder passwordEncoder(){
@@ -56,14 +59,14 @@ public class SecurityProject {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception{
         return http.csrf(csrf -> csrf.disable())
-                .authorizeHttpRequests(requests -> requests
-                        .requestMatchers("/api/auth/**").permitAll())
-                .authorizeHttpRequests(requests -> requests.requestMatchers("/api/v1/**").authenticated())
-                .sessionManagement(management -> management.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .exceptionHandling(handling -> handling
-                        .authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED)))
-                .authenticationProvider(authenticationProvider())
-                .addFilterBefore(authFilter, UsernamePasswordAuthenticationFilter.class)
-                .build();
+        .authorizeHttpRequests(requests -> requests
+                .requestMatchers("/api/auth/**").permitAll()) // Permitir acceso a /auth/login
+        .authorizeHttpRequests(requests -> requests.requestMatchers("/api/v1/**").authenticated())
+        .sessionManagement(management -> management.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+        .exceptionHandling(handling -> handling
+                .authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED)))
+        .authenticationProvider(authenticationProvider())
+        .addFilterBefore(authFilter, UsernamePasswordAuthenticationFilter.class)
+        .build();
     }
 }

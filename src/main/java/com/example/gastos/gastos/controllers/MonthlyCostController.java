@@ -11,12 +11,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.gastos.gastos.dto.MonthFixedCostDto;
-import com.example.gastos.gastos.models.MonthFixedCostModel;
+import com.example.gastos.gastos.models.MonthlyCostModel;
 import com.example.gastos.gastos.models.StatusModel;
-import com.example.gastos.gastos.models.SupplierModel;
-import com.example.gastos.gastos.services.MonthFixedCostsService;
+import com.example.gastos.gastos.models.ProviderModel;
+import com.example.gastos.gastos.services.MonthlyCostService;
 import com.example.gastos.gastos.services.StatusService;
-import com.example.gastos.gastos.services.SuppliersService;
+import com.example.gastos.gastos.services.ProviderService;
 
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -30,16 +30,16 @@ import org.springframework.web.bind.annotation.RequestBody;
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
 @RequestMapping("/api/v1")
-public class MonthFixedCostController {
+public class MonthlyCostController {
 
     @Autowired
-    private MonthFixedCostsService monthFixedCostsService;
+    private MonthlyCostService monthFixedCostsService;
 
     @Autowired
     private StatusService statusService;
 
     @Autowired
-    private SuppliersService suppliersService;
+    private ProviderService suppliersService;
 
     @GetMapping("/fixed-cost")
     public ResponseEntity<?> getMethod() {
@@ -53,6 +53,14 @@ public class MonthFixedCostController {
         return ResponseEntity.status(HttpStatus.OK).body(this.monthFixedCostsService.listByMonthAndYear(month, currentDate.getYear())); 
     }
 
+    @GetMapping("/fixed-cost-not-pay/{month}")
+    public ResponseEntity<?> getMethodUnpaidCost(@PathVariable("month") Integer month){
+        LocalDate now = LocalDate.now();
+        Integer currentYear = now.getYear();
+
+        return ResponseEntity.status(HttpStatus.OK).body(this.monthFixedCostsService.listByStatusNameAndCreatedMonthAndYear("No pagado", month, currentYear)); 
+    }
+
     /*
      * {
         "name":"Cuenta de Cable",
@@ -63,8 +71,8 @@ public class MonthFixedCostController {
      */
     @PostMapping("/fixed-cost")
     public ResponseEntity<?> postMethod(@RequestBody MonthFixedCostDto dto) {
-        SupplierModel supplier = this.suppliersService.findById(dto.getSupplierId());
-        if (supplier==null) {
+        ProviderModel provider = this.suppliersService.findById(dto.getSupplierId());
+        if (provider==null) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new HashMap<String, String>(){
                 {
                     put("message", "Ocurrió un error inesperado");
@@ -76,12 +84,12 @@ public class MonthFixedCostController {
                  * String name, Double amount, Date created, StatusModel statusId,
                     SupplierModel supplierId
                  */
-                this.monthFixedCostsService.save(new MonthFixedCostModel(
+                this.monthFixedCostsService.save(new MonthlyCostModel(
                     dto.getName(),
                     dto.getAmount(),
                     new Date(),
                     this.statusService.findById(4L),
-                    supplier
+                    provider
                 ));
                 return ResponseEntity.status(HttpStatus.CREATED).body(new HashMap<String, String>(){
                     {
@@ -107,10 +115,10 @@ public class MonthFixedCostController {
      */
     @PutMapping("/fixed-cost/{id}")
     public ResponseEntity<?> putMethod(@PathVariable("id") Long id, @RequestBody MonthFixedCostDto dto) {
-        MonthFixedCostModel data = this.monthFixedCostsService.findById(id);
-        SupplierModel supplier = this.suppliersService.findById(dto.getSupplierId());
+        MonthlyCostModel data = this.monthFixedCostsService.findById(id);
+        ProviderModel provider = this.suppliersService.findById(dto.getSupplierId());
         StatusModel status = this.statusService.findById(dto.getStatusId());
-        if (data == null || supplier == null || status == null) {
+        if (data == null || provider == null || status == null) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new HashMap<String, String>(){
                 {
                     put("message", "Ocurrió un error inesperado");
@@ -121,7 +129,7 @@ public class MonthFixedCostController {
                 data.setStatusId(this.statusService.findById(dto.getStatusId()));
                 data.setAmount(dto.getAmount());
                 data.setName(dto.getName());
-                data.setSupplierId(supplier);
+                data.setProviderId(provider);
                 this.monthFixedCostsService.save(data);
                 return ResponseEntity.status(HttpStatus.OK).body(new HashMap<String, String>(){
                     {
@@ -140,7 +148,7 @@ public class MonthFixedCostController {
 
     @DeleteMapping("/fixed-cost/{id}")
     public ResponseEntity<?> deleteMethod(@PathVariable("id") Long id){
-        MonthFixedCostModel data = this.monthFixedCostsService.findById(id);
+        MonthlyCostModel data = this.monthFixedCostsService.findById(id);
         if (data == null) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new HashMap<String, String>(){
                 {

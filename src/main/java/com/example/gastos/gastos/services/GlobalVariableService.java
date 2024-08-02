@@ -11,7 +11,7 @@ import com.example.gastos.gastos.models.GlobalVariableModel;
 import com.example.gastos.gastos.repositories.IGlobalVariableRepository;
 
 @Service
-public class GlobalVariablesService {
+public class GlobalVariableService {
 @Autowired
     private IGlobalVariableRepository repository;
 

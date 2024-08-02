@@ -8,9 +8,9 @@ import jakarta.persistence.Table;
 import lombok.Data;
 
 @Entity
-@Table(name = "suppliers")
+@Table(name = "providers")
 @Data
-public class SupplierModel {
+public class ProviderModel {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -18,10 +18,10 @@ public class SupplierModel {
 
     private String name;
 
-    public SupplierModel(String name) {
+    public ProviderModel(String name) {
         this.name = name;
     }
 
-    public SupplierModel() {
+    public ProviderModel() {
     }
 }

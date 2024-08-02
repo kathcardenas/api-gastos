@@ -8,5 +8,8 @@ import com.example.gastos.gastos.models.StatusModel;
 
 public interface IStatusRepository extends JpaRepository<StatusModel, Long>{
 
+    /*
+     * Método para buscar los estados por Id
+     */
     List<StatusModel> findByIdIn(List<Long> id);
 }

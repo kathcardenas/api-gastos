@@ -7,14 +7,15 @@ import java.util.HashMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.gastos.gastos.dto.DayFixedCostDto;
-import com.example.gastos.gastos.models.DayFixedCostModel;
-import com.example.gastos.gastos.models.SupplierModel;
-import com.example.gastos.gastos.services.DayFixedCostsService;
-import com.example.gastos.gastos.services.SuppliersService;
+import com.example.gastos.gastos.models.DailyCostModel;
+import com.example.gastos.gastos.models.ProviderModel;
+import com.example.gastos.gastos.services.DailyCostService;
+import com.example.gastos.gastos.services.ProviderService;
 
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -28,14 +29,15 @@ import org.springframework.web.bind.annotation.RequestBody;
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
 @RequestMapping("/api/v1")
-public class DayFixedCostController {
+public class DailyCostController {
     @Autowired
-    private DayFixedCostsService dayFixedCostsService;
+    private DailyCostService dayFixedCostsService;
 
     @Autowired
-    private SuppliersService suppliersService;
+    private ProviderService suppliersService;
 
     @GetMapping("/dayli-fixed-cost")
+    @PreAuthorize("hasRole('ROLE_SUPER_ADMIN')")
     public ResponseEntity<?> getMethod() {
         LocalDate currentDate = LocalDate.now();
         return ResponseEntity.status(HttpStatus.OK).body(this.dayFixedCostsService.listByMonthAndYear(currentDate.getMonthValue(), currentDate.getYear()));
@@ -58,9 +60,9 @@ public class DayFixedCostController {
     @PostMapping("/dayli-fixed-cost")
     public ResponseEntity<?> postMethod(@RequestBody DayFixedCostDto dto) {
         try {
-            SupplierModel supplier = this.suppliersService.findById(dto.getSupplierId());
+            ProviderModel supplier = this.suppliersService.findById(dto.getSupplierId());
             if (supplier != null) {
-                this.dayFixedCostsService.save(new DayFixedCostModel(
+                this.dayFixedCostsService.save(new DailyCostModel(
                     dto.getNet(),
                     dto.getIva(),
                     dto.getTotal(),
@@ -99,14 +101,14 @@ public class DayFixedCostController {
     @PutMapping("/dayli-fixed-cost/{id}")
     public ResponseEntity<?> putMethod(@PathVariable("id") Long id, @RequestBody DayFixedCostDto dto) {
         try {
-            DayFixedCostModel data = this.dayFixedCostsService.findById(id);
-            SupplierModel supplier = this.suppliersService.findById(dto.getSupplierId());
-            if (data != null && supplier != null) {
+            DailyCostModel data = this.dayFixedCostsService.findById(id);
+            ProviderModel provider = this.suppliersService.findById(dto.getSupplierId());
+            if (data != null && provider != null) {
                 data.setIva(dto.getIva());
                 data.setDescription(dto.getDescription());
                 data.setNet(dto.getNet());
                 data.setTotal(dto.getTotal());
-                data.setSupplierId(supplier);
+                data.setProviderId(provider);
                 this.dayFixedCostsService.save(data);
                 return ResponseEntity.status(HttpStatus.OK).body(new HashMap<String, String>(){
                     {
@@ -131,7 +133,7 @@ public class DayFixedCostController {
     @DeleteMapping("/dayli-fixed-cost/{id}")
     public ResponseEntity<?> deleteMethod(@PathVariable("id") Long id){
         try {
-            DayFixedCostModel data = this.dayFixedCostsService.findById(id);
+            DailyCostModel data = this.dayFixedCostsService.findById(id);
             if (data!=null) {
                 this.dayFixedCostsService.delete(id);
                 return ResponseEntity.status(HttpStatus.OK).body(new HashMap<String, String>(){

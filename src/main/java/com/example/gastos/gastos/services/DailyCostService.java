@@ -7,24 +7,28 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
-import com.example.gastos.gastos.models.SupplierModel;
-import com.example.gastos.gastos.repositories.ISupplierRepository;
+import com.example.gastos.gastos.models.DailyCostModel;
+import com.example.gastos.gastos.repositories.IDailyCostsRepository;
 
 @Service
-public class SuppliersService {
+public class DailyCostService {
 @Autowired
-    private ISupplierRepository repository;
+    private IDailyCostsRepository repository;
 
-    public List<SupplierModel> list(){
+    public List<DailyCostModel> list(){
         return this.repository.findAll(Sort.by("id").descending());
     }
 
-    public void save(SupplierModel model){
+    public List<DailyCostModel> listByMonthAndYear(Integer month, Integer year){
+        return this.repository.findAllByMonthAndYear(month, year);
+    }
+
+    public void save(DailyCostModel model){
         this.repository.save(model);
     }
 
-    public SupplierModel findById(Long id){
-        Optional<SupplierModel> optional = this.repository.findById(id);
+    public DailyCostModel findById(Long id){
+        Optional<DailyCostModel> optional = this.repository.findById(id);
         if (optional.isPresent()) {
             return optional.get();
         }
